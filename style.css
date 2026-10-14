@@ -1,806 +1,361 @@
+/* =====================================================================
+   style.css : SEMUA TAMPILAN APLIKASI BUKU TAMU
+
+   CARA PAKAI SINGKAT
+   - Komentar di CSS diawali garis-miring + bintang dan diakhiri bintang + garis-miring
+     (bukan // atau #). Teks di antaranya diabaikan oleh browser.
+   - Mau ganti WARNA?  Ubah di bagian 1 (variabel warna). Cukup di satu tempat.
+   - Mau ubah UKURAN / JARAK?  Cari bagiannya di daftar isi, lalu ubah angkanya.
+   - Satuan: px = piksel, rem = kelipatan ukuran huruf dasar (1rem = 16px),
+     % = persen dari induknya. "var(--nama)" artinya memakai warna dari bagian 1.
+   - Setelah file ini diubah, upload ke GitHub lalu buka aplikasi dengan internet menyala.
+     Versi baru terambil otomatis (service worker mengambil dari internet dulu).
+
+   DAFTAR ISI
+    1. Variabel warna (terang dan gelap)
+    2. Dasar: huruf, kolom isian, tombol
+    3. Bar atas (logo, nama aplikasi, ikon)
+    4. Menu pengaturan (titik tiga) dan pilihan tema
+    5. Konten utama: ringkasan, banner backup, pencarian, filter tanggal
+    6. Daftar tamu (baris tamu)
+    7. Tombol "+ Tambah Tamu" dan bar aksi hapus massal
+    8. Navigasi bawah (tab Tamu, Kelola, Laporan)
+    9. Panel pop-up (form, detail, konfirmasi)
+   10. Kamera
+   11. Layar PIN
+   12. Pesan singkat (toast)
+   13. Tabel laporan
+   14. Animasi dan transisi
+   15. Layar lebar (laptop/tablet)
+   16. Cetak (PDF)
+   ===================================================================== */
+
+
+/* ===== 1. VARIABEL WARNA =====
+   Tema TERANG ada di :root. Tema GELAP ada dua blok di bawahnya:
+   satu untuk "ikut sistem HP", satu untuk pilihan "Gelap" manual.
+   Kalau mengubah warna tema gelap, ubah KEDUA blok gelap dengan nilai sama. */
 :root {
-    --hd: #391E10;
-    --g: #734128;
-    --gt: #FFFAE6;
-    --gold: #FFCF00;
-    --bg: #FFFAE6;
-    --c: #FFFFFF;
-    --t: #391E10;
-    --m: #734128;
-    --l: #E2CEB1;
-    --r: #9B2C1D
+  --hd:   #391E10;  /* latar bar atas dan layar PIN */
+  --g:    #734128;  /* warna utama: tombol utama, tab aktif, garis fokus */
+  --gt:   #FFFAE6;  /* warna teks di atas warna utama (--g) */
+  --gold: #FFCF00;  /* emas aksen: garis bar atas, penanda tab, tombol tambah */
+  --bg:   #FFFAE6;  /* latar halaman */
+  --c:    #FFFFFF;  /* latar kartu, panel, menu, kolom isian */
+  --t:    #391E10;  /* teks utama */
+  --m:    #734128;  /* teks sekunder (keterangan kecil) */
+  --l:    #E2CEB1;  /* garis pemisah dan bingkai */
+  --r:    #9B2C1D;  /* merah untuk aksi berbahaya (hapus) */
 }
 
-@media(prefers-color-scheme:dark) {
-    :root:not([data-t]) {
-        --bg: #261F00;
-        --c: #391E10;
-        --t: #FFFAE6;
-        --m: #E2CEB1;
-        --l: #734128;
-        --g: #FFCF00;
-        --gt: #261F00;
-        --hd: #000;
-        --r: #FF8A75
-    }
+/* tema gelap: mengikuti pengaturan HP bila pengguna belum memilih manual */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-t]) {
+    --bg: #261F00; --c: #391E10; --t: #FFFAE6; --m: #E2CEB1; --l: #734128;
+    --g: #FFCF00; --gt: #261F00; --hd: #000; --r: #FF8A75;
+    color-scheme: dark;  /* membuat ikon kalender dan scrollbar ikut gelap */
+  }
 }
 
+/* tema gelap: dipilih manual lewat menu pengaturan (nilai harus sama dengan di atas) */
 :root[data-t=dark] {
-    --bg: #261F00;
-    --c: #391E10;
-    --t: #FFFAE6;
-    --m: #E2CEB1;
-    --l: #734128;
-    --g: #FFCF00;
-    --gt: #261F00;
-    --hd: #000;
-    --r: #FF8A75
+  --bg: #261F00; --c: #391E10; --t: #FFFAE6; --m: #E2CEB1; --l: #734128;
+  --g: #FFCF00; --gt: #261F00; --hd: #000; --r: #FF8A75;
+  color-scheme: dark;
 }
 
-* {
-    box-sizing: border-box
-}
+
+/* ===== 2. DASAR ===== */
+* { box-sizing: border-box; }                 /* padding dan bingkai dihitung di dalam lebar elemen */
+html, body { overscroll-behavior-x: none; }   /* cegah geser mendatar bawaan browser */
 
 body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--t);
-    font: 16px/1.45 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif
+  margin: 0;
+  background: var(--bg);
+  color: var(--t);
+  /* ukuran huruf dasar / tinggi baris / jenis huruf (urutan = cadangan jika huruf pertama gagal dimuat) */
+  font: 16px/1.45 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-[hidden] {
-    display: none !important
+[hidden] { display: none !important; }        /* elemen ber-atribut hidden harus selalu tersembunyi. Jangan dihapus. */
+
+input, select, button { font: inherit; color: inherit; }   /* ikuti huruf dan warna sekitarnya */
+
+/* kolom isian dan dropdown */
+input, select {
+  width: 100%;
+  padding: 11px 12px;               /* tinggi kolom isian */
+  border: 1px solid var(--l);
+  border-radius: 8px;               /* kebulatan sudut */
+  background: var(--c);
+  margin-top: 4px;                  /* jarak dari label di atasnya */
 }
 
-input,
-select,
-button {
-    font: inherit;
-    color: inherit
-}
+/* teks label di atas kolom isian */
+label { display: block; margin: 0 0 12px; font-size: .9rem; color: var(--m); }
 
-input,
-select {
-    width: 100%;
-    padding: 11px 12px;
-    border: 1px solid var(--l);
-    border-radius: 8px;
-    background: var(--c);
-    margin-top: 4px
-}
+/* tombol dasar (polos, tanpa warna) */
+button { cursor: pointer; border: 0; border-radius: 8px; padding: 11px 16px; background: none; }
+.b  { background: var(--g); color: var(--gt); font-weight: 600; }   /* tombol utama (berwarna) */
+.b2 { border: 1px solid var(--l); background: var(--c); }          /* tombol sekunder (bergaris) */
 
-label {
-    display: block;
-    margin: 0 0 12px;
-    font-size: .9rem;
-    color: var(--m)
-}
+/* garis tebal di sekitar kolom/tombol saat dipilih (penting untuk aksesibilitas) */
+input:focus, select:focus, button:focus-visible { outline: 2px solid var(--g); outline-offset: 1px; }
 
-button {
-    cursor: pointer;
-    border: 0;
-    border-radius: 8px;
-    padding: 11px 16px;
-    background: none
-}
 
-.b {
-    background: var(--g);
-    color: var(--gt);
-    font-weight: 600
-}
-
-.b2 {
-    border: 1px solid var(--l);
-    background: var(--c)
-}
-
-#nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    background: var(--c);
-    border-top: 1px solid var(--l);
-    padding-bottom: env(safe-area-inset-bottom, 0);
-    z-index: 10
-}
-
-#nav a {
-    flex: 1;
-    text-align: center;
-    padding: 14px 4px;
-    font-size: .88rem;
-    color: var(--m);
-    cursor: pointer
-}
-
-#nav a.on {
-    color: var(--g);
-    font-weight: 700;
-    box-shadow: inset 0 3px var(--gold)
-}
-
+/* ===== 3. BAR ATAS ===== */
 #top {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: calc(56px + env(safe-area-inset-top, 0px));
-    padding: env(safe-area-inset-top, 0px) 8px 0 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--hd);
-    color: #FFFAE6;
-    border-bottom: 3px solid var(--gold);
-    z-index: 15
+  position: fixed; top: 0; left: 0; right: 0;
+  height: calc(56px + env(safe-area-inset-top, 0px));         /* tinggi bar (56px) + area poni/notch HP */
+  padding: env(safe-area-inset-top, 0px) 8px 0 12px;          /* atas, kanan, bawah, kiri */
+  display: flex; align-items: center; gap: 10px;              /* gap = jarak antar isi bar */
+  background: var(--hd);
+  color: #FFFAE6;                                             /* warna teks di bar atas */
+  border-bottom: 3px solid var(--gold);                       /* garis emas di bawah bar */
+  z-index: 15;                                                /* urutan tumpukan: makin besar makin di atas */
 }
 
-#logo {
-    width: 54px;
-    height: 38px;
-    border-radius: 8px;
-    background: #fff;
-    padding: 4px;
-    object-fit: contain
-}
+/* kotak putih tempat logo. Ubah width/height kalau logo mau lebih besar. */
+#logo { width: 54px; height: 38px; border-radius: 8px; background: #fff; padding: 4px; object-fit: contain; }
 
-.tt {
-    flex: 1;
-    line-height: 1.2
-}
+.tt { flex: 1; line-height: 1.2; }                            /* blok teks nama aplikasi (mengisi ruang tengah) */
+.tt b { display: block; font-size: 1.05rem; letter-spacing: .01em; }   /* "Buku Tamu" */
+.tt small { opacity: .8; font-size: .78rem; }                          /* "Kemenhaj Magetan" */
 
-.tt b {
-    display: block
-}
+/* tombol ikon di bar atas (kunci dan titik tiga) */
+.ib { color: #FFFAE6; width: 42px; height: 42px; padding: 0; display: grid; place-items: center; border-radius: 8px; }
 
-.tt small {
-    opacity: .8;
-    font-size: .78rem
-}
 
-.ib {
-    color: #FFFAE6;
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 8px
-}
-
+/* ===== 4. MENU PENGATURAN ===== */
 .menu {
-    position: fixed;
-    right: 10px;
-    top: calc(60px + env(safe-area-inset-top, 0px));
-    background: var(--c);
-    border: 1px solid var(--l);
-    border-radius: 12px;
-    padding: 8px;
-    width: 230px;
-    z-index: 16;
-    box-shadow: 0 6px 20px #0004
+  position: fixed; right: 10px;
+  top: calc(60px + env(safe-area-inset-top, 0px));            /* posisi tepat di bawah bar atas */
+  background: var(--c); border: 1px solid var(--l); border-radius: 12px;
+  padding: 8px; width: 230px;                                  /* lebar menu */
+  z-index: 16;
+  box-shadow: 0 6px 20px #0004;                                /* bayangan */
 }
+.menu > button { display: block; width: 100%; text-align: left; padding: 12px; color: var(--t); }   /* "Ubah PIN", "Kunci aplikasi" */
+.menu small { color: var(--m); padding: 4px 4px; display: block; }                                  /* tulisan kecil "Tema tampilan" dan versi */
 
-.menu>button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 12px;
-    color: var(--t)
-}
+/* tiga tombol pilihan tema (Terang / Gelap / Sistem) */
+.seg { display: flex; gap: 4px; padding: 4px 0 8px; }
+.seg button { flex: 1; border: 1px solid var(--l); padding: 8px 2px; font-size: .85rem; color: var(--t); }
+.seg button.on { background: var(--g); color: var(--gt); border-color: var(--g); }   /* tema yang sedang dipilih */
 
-.menu small {
-    color: var(--m);
-    padding: 4px 4px;
-    display: block
-}
 
-.seg {
-    display: flex;
-    gap: 4px;
-    padding: 4px 0 8px
-}
-
-.seg button {
-    flex: 1;
-    border: 1px solid var(--l);
-    padding: 8px 2px;
-    font-size: .85rem;
-    color: var(--t)
-}
-
-.seg button.on {
-    background: var(--g);
-    color: var(--gt);
-    border-color: var(--g)
-}
-
-body.sel #fab {
-    display: none
-}
-
-input:focus,
-select:focus,
-button:focus-visible {
-    outline: 2px solid var(--g);
-    outline-offset: 1px
-}
-
-time,
-.st b {
-    font-variant-numeric: tabular-nums
-}
-
-.tt b {
-    font-size: 1.05rem;
-    letter-spacing: .01em
-}
-
-button {
-    transition: transform .12s, filter .12s
-}
-
-button:active {
-    transform: scale(.97)
-}
-
-#fab:active {
-    transform: translateX(-50%) scale(.97)
-}
-
-body,
-.r,
-.card,
-.box,
-#nav,
-.st,
-input,
-select {
-    transition: background-color .25s, color .25s, border-color .25s
-}
-
-.r:active {
-    background: var(--bg)
-}
-
-@media(hover:hover) {
-    .b:hover {
-        filter: brightness(1.1)
-    }
-
-    .b2:hover,
-    .r:hover {
-        border-color: var(--g)
-    }
-}
-
-@keyframes fade {
-    from {
-        opacity: 0
-    }
-}
-
-@keyframes up {
-    from {
-        opacity: 0;
-        transform: translateY(24px)
-    }
-}
-
-@keyframes drop {
-    from {
-        opacity: 0;
-        transform: translateY(-6px)
-    }
-}
-
-@keyframes pop {
-    from {
-        opacity: 0;
-        transform: translate(-50%, 8px)
-    }
-}
-
-.sh,
-#cam,
-main>section {
-    animation: fade .18s
-}
-
-.card,
-.box {
-    animation: up .26s cubic-bezier(.2, .8, .2, 1)
-}
-
-.menu {
-    animation: drop .15s
-}
-
-#toast {
-    animation: pop .2s
-}
-
-@keyframes sl {
-    from {
-        opacity: 0;
-        transform: translateX(var(--sx))
-    }
-}
-
-main>section.sl-r {
-    --sx: 80px
-}
-
-main>section.sl-l {
-    --sx: -80px
-}
-
-main>section.sl-r,
-main>section.sl-l {
-    animation: sl .32s cubic-bezier(.2, .8, .2, 1)
-}
-
-html,
-body {
-    overscroll-behavior-x: none
-}
-
-@media(prefers-reduced-motion:reduce) {
-    * {
-        animation: none !important;
-        transition: none !important
-    }
-}
-
+/* ===== 5. KONTEN UTAMA ===== */
 main {
-    padding: calc(70px + env(safe-area-inset-top, 0px)) 14px calc(150px + env(safe-area-inset-bottom, 0));
-    max-width: 760px;
-    margin: 0 auto
+  /* urutan padding: atas, kanan-kiri, bawah. Atas menyisakan ruang untuk bar atas, bawah untuk tombol dan navigasi. */
+  padding: calc(70px + env(safe-area-inset-top, 0px)) 14px calc(150px + env(safe-area-inset-bottom, 0));
+  max-width: 760px;                  /* lebar maksimum isi halaman */
+  margin: 0 auto;                    /* tengahkan */
 }
 
-.bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px
-}
+/* baris pencarian (kolom nama + tanggal) */
+.bar { display: flex; gap: 8px; margin-bottom: 10px; }
+.bar input { margin: 0; }
+.bar input[type=date] { width: auto; }
 
-.bar input {
-    margin: 0
-}
+/* dua kolom tanggal "Dari" dan "Sampai" (Laporan dan Kelola) */
+.dr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }   /* 1fr 1fr = dua kolom sama lebar */
+.dr label { margin: 0; }
+.dr input { width: 100%; min-width: 0; margin-top: 4px; }
 
-.bar input[type=date] {
-    width: auto
-}
+/* kotak ringkasan "tamu hari ini / bulan ini" */
+.st { background: var(--c); border: 1px solid var(--l); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+.st small { color: var(--m); display: block; margin-bottom: 6px; }                      /* tanggal di atas angka */
+.st .n { display: flex; }                                                               /* dua angka berdampingan */
+.st .n div { flex: 1; }
+.st .n div + div { border-left: 1px solid var(--l); padding-left: 14px; }               /* garis pemisah antar dua angka */
+.st b { font-size: 1.5rem; line-height: 1.1; display: block; font-variant-numeric: tabular-nums; }   /* ukuran angka */
+.st span { color: var(--m); font-size: .82rem; }                                        /* keterangan di bawah angka */
 
+/* banner kuning pengingat backup */
+.note { background: #FFEFAC; border: 1px solid #C9A300; color: #391E10; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+.note span { flex: 1; }
+
+/* tulisan "Belum ada tamu..." saat daftar kosong */
+.e { text-align: center; color: var(--m); padding: 36px 12px; }
+
+
+/* ===== 6. DAFTAR TAMU ===== */
+/* satu baris tamu */
 .r {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    background: var(--c);
-    border: 1px solid var(--l);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 8px;
-    cursor: pointer
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--c); border: 1px solid var(--l); border-radius: 10px;
+  padding: 12px;                     /* tinggi baris. Perbesar kalau ingin lebih lega. */
+  margin-bottom: 8px;                /* jarak antar baris */
+  cursor: pointer;
 }
+.r.x { opacity: .55; }                                         /* baris data yang sudah dihapus (pudar) */
+.m { flex: 1; min-width: 150px; }                              /* blok nama + keterangan di kiri baris */
+.m b { display: block; }                                       /* nama tamu */
+.m span { color: var(--m); font-size: .88rem; }                /* kecamatan / instansi */
+.chip { background: var(--bg); border-radius: 20px; padding: 1px 8px; margin-left: 6px; font-size: .78rem; }   /* label "3 orang" */
+time { color: var(--m); font-size: .85rem; font-variant-numeric: tabular-nums; }                              /* jam masuk di kanan baris */
 
-.r.x {
-    opacity: .55
-}
+/* tombol Edit / Hapus / Pulihkan di dalam baris (tab Kelola) */
+.a { width: 100%; display: flex; gap: 8px; }
+.a button { border: 1px solid var(--l); padding: 8px 14px; }
+.a .d { color: var(--r); }                                     /* tombol Hapus berwarna merah */
 
-.m {
-    flex: 1;
-    min-width: 150px
-}
+.ck { width: 22px; height: 22px; margin: 0; flex: none; }      /* kotak centang (ukuran besar agar mudah ditekan) */
 
-.m b {
-    display: block
-}
 
-.m span {
-    color: var(--m);
-    font-size: .88rem
-}
-
-.chip {
-    background: var(--bg);
-    border-radius: 20px;
-    padding: 1px 8px;
-    margin-left: 6px;
-    font-size: .78rem
-}
-
-time {
-    color: var(--m);
-    font-size: .85rem
-}
-
-.a {
-    width: 100%;
-    display: flex;
-    gap: 8px
-}
-
-.a button {
-    border: 1px solid var(--l);
-    padding: 8px 14px
-}
-
-.a .d {
-    color: var(--r)
-}
-
-.e {
-    text-align: center;
-    color: var(--m);
-    padding: 36px 12px
-}
-
+/* ===== 7. TOMBOL TAMBAH TAMU DAN BAR AKSI ===== */
+/* tombol melayang "+ Tambah Tamu" di tengah bawah */
 #fab {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
-    height: 52px;
-    padding: 0 22px;
-    border-radius: 26px;
-    background: var(--gold);
-    color: #261F00;
-    font-weight: 700;
-    box-shadow: 0 3px 10px #0004;
-    z-index: 11;
-    white-space: nowrap
+  position: fixed; left: 50%; transform: translateX(-50%);                   /* tengah layar */
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));                     /* jarak dari bawah; 68px = tepat di atas navigasi */
+  height: 52px; padding: 0 22px; border-radius: 26px;                        /* bentuk pil */
+  background: var(--gold); color: #261F00; font-weight: 700;
+  box-shadow: 0 3px 10px #0004;
+  z-index: 11; white-space: nowrap;
 }
+#fab span { font-size: 1.5rem; margin-right: 6px; vertical-align: -2px; }    /* tanda "+" */
+body.sel #fab { display: none; }                                             /* sembunyikan tombol saat bar aksi hapus muncul */
 
-#fab span {
-    font-size: 1.5rem;
-    margin-right: 6px;
-    vertical-align: -2px
-}
-
-.sh {
-    position: fixed;
-    inset: 0;
-    background: #0008;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 20
-}
-
-.card {
-    background: var(--c);
-    width: 100%;
-    max-width: 520px;
-    max-height: 92vh;
-    overflow: auto;
-    border-radius: 16px 16px 0 0;
-    padding: 18px
-}
-
-.card h3 {
-    margin: 0 0 12px
-}
-
-.row {
-    display: flex;
-    gap: 8px
-}
-
-.row button {
-    flex: 1
-}
-
-dl {
-    margin: 0 0 14px
-}
-
-dt {
-    font-size: .8rem;
-    color: var(--m);
-    margin-top: 8px
-}
-
-dd {
-    margin: 0
-}
-
-.ph {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 8px
-}
-
-.th {
-    height: 64px;
-    border-radius: 8px;
-    vertical-align: middle;
-    margin-right: 8px
-}
-
-#cam {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 30;
-    display: flex;
-    flex-direction: column
-}
-
-#cam video,
-#cam img {
-    flex: 1;
-    min-height: 0;
-    width: 100%;
-    object-fit: contain
-}
-
-#cam .row {
-    padding: 14px
-}
-
-.lock {
-    position: fixed;
-    inset: 0;
-    background: var(--hd);
-    z-index: 40;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px
-}
-
-.box {
-    background: var(--c);
-    padding: 24px;
-    border-radius: 14px;
-    width: 100%;
-    max-width: 340px
-}
-
-.box h2 {
-    margin: 0 0 4px
-}
-
-.box p {
-    margin: 0 0 10px;
-    color: var(--m)
-}
-
-.box button {
-    width: 100%;
-    margin-top: 10px
-}
-
-.lg {
-    display: block;
-    width: 62%;
-    max-width: 190px;
-    margin: 0 auto 12px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 8px
-}
-
-#toast {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: calc(140px + env(safe-area-inset-bottom, 0));
-    background: #261F00;
-    color: #FFEFAC;
-    border: 1px solid #C9A300;
-    padding: 10px 16px;
-    border-radius: 8px;
-    z-index: 50;
-    max-width: 90%
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .85rem;
-    margin: 10px 0
-}
-
-th,
-td {
-    border-bottom: 1px solid var(--l);
-    padding: 6px;
-    text-align: left
-}
-
-.tw {
-    overflow-x: auto
-}
-
-.dr {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px
-}
-
-.dr label {
-    margin: 0
-}
-
-.dr input {
-    width: 100%;
-    min-width: 0;
-    margin-top: 4px
-}
-
-@media(prefers-color-scheme:dark) {
-    :root:not([data-t]) {
-        color-scheme: dark
-    }
-}
-
-:root[data-t=dark] {
-    color-scheme: dark
-}
-
-.ck {
-    width: 22px;
-    height: 22px;
-    margin: 0;
-    flex: none
-}
-
+/* bar "N dipilih" + Pulihkan + Hapus permanen (muncul di tab Kelola saat ada yang dicentang) */
 #bulk {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: calc(58px + env(safe-area-inset-bottom, 0));
-    background: var(--c);
-    border-top: 1px solid var(--l);
-    padding: 10px 14px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    z-index: 12
+  position: fixed; left: 0; right: 0;
+  bottom: calc(58px + env(safe-area-inset-bottom, 0));         /* tepat di atas navigasi */
+  background: var(--c); border-top: 1px solid var(--l);
+  padding: 10px 14px; display: flex; gap: 8px; align-items: center;
+  z-index: 12;
+}
+#bulk b { flex: 1; }
+
+
+/* ===== 8. NAVIGASI BAWAH ===== */
+#nav {
+  position: fixed; bottom: 0; left: 0; right: 0; display: flex;
+  background: var(--c); border-top: 1px solid var(--l);
+  padding-bottom: env(safe-area-inset-bottom, 0);               /* ruang untuk garis gestur HP */
+  z-index: 10;
+}
+#nav a { flex: 1; text-align: center; padding: 14px 4px; font-size: .88rem; color: var(--m); cursor: pointer; }   /* tiap tab (padding = tinggi tab) */
+#nav a.on { color: var(--g); font-weight: 700; box-shadow: inset 0 3px var(--gold); }                            /* tab aktif: teks tebal + garis emas */
+
+
+/* ===== 9. PANEL POP-UP (form, detail, konfirmasi) ===== */
+/* lapisan gelap di belakang panel */
+.sh { position: fixed; inset: 0; background: #0008; display: flex; align-items: flex-end; justify-content: center; z-index: 20; }   /* #0008 = hitam 53% */
+
+/* kotak putih panel yang naik dari bawah */
+.card {
+  background: var(--c); width: 100%;
+  max-width: 520px;                                              /* lebar maksimum panel */
+  max-height: 92vh; overflow: auto;                              /* tinggi maksimum; lebih dari itu bisa digulir */
+  border-radius: 16px 16px 0 0;                                  /* hanya sudut atas yang bulat */
+  padding: 18px;
+}
+.card h3 { margin: 0 0 12px; }                                   /* judul panel */
+.row { display: flex; gap: 8px; }                                /* baris tombol berdampingan (Batal | Simpan) */
+.row button { flex: 1; }
+
+/* tampilan detail tamu (daftar judul-isi) */
+dl { margin: 0 0 14px; }
+dt { font-size: .8rem; color: var(--m); margin-top: 8px; }       /* judul kecil, misalnya "Kecamatan" */
+dd { margin: 0; }                                                /* isinya */
+
+.ph { width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; }     /* foto besar di detail */
+.th { height: 64px; border-radius: 8px; vertical-align: middle; margin-right: 8px; }                    /* foto kecil di form */
+
+
+/* ===== 10. KAMERA ===== */
+#cam { position: fixed; inset: 0; background: #000; z-index: 30; display: flex; flex-direction: column; }   /* layar penuh */
+#cam video, #cam img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }                          /* tampilan kamera / hasil foto */
+#cam .row { padding: 14px; }                                                                                /* baris tombol Jepret dkk */
+
+
+/* ===== 11. LAYAR PIN ===== */
+.lock { position: fixed; inset: 0; background: var(--hd); z-index: 40; display: flex; align-items: center; justify-content: center; padding: 20px; }   /* latar layar penuh */
+.box { background: var(--c); padding: 24px; border-radius: 14px; width: 100%; max-width: 340px; }     /* kotak isian PIN */
+.box h2 { margin: 0 0 4px; }
+.box p { margin: 0 0 10px; color: var(--m); }
+.box button { width: 100%; margin-top: 10px; }
+.lg { display: block; width: 62%; max-width: 190px; margin: 0 auto 12px; background: #fff; border-radius: 12px; padding: 8px; }   /* logo lengkap di atas kotak PIN */
+.lnk { background: none; color: var(--m); text-decoration: underline; width: 100%; padding: 8px; }   /* tombol bergaya tautan ("Lupa PIN?", "Hapus filter tanggal") */
+
+
+/* ===== 12. PESAN SINGKAT (TOAST) ===== */
+#toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(140px + env(safe-area-inset-bottom, 0));         /* jarak dari bawah (di atas tombol tambah) */
+  background: #261F00; color: #FFEFAC; border: 1px solid #C9A300;
+  padding: 10px 16px; border-radius: 8px; z-index: 50; max-width: 90%;
 }
 
-#bulk b {
-    flex: 1
+
+/* ===== 13. TABEL LAPORAN ===== */
+table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 10px 0; }
+th, td { border-bottom: 1px solid var(--l); padding: 6px; text-align: left; }      /* padding = kerapatan sel */
+.tw { overflow-x: auto; }                                                          /* tabel bisa digeser mendatar di HP */
+
+
+/* ===== 14. ANIMASI DAN TRANSISI =====
+   Durasi ditulis dalam detik (.2s = 0,2 detik). Makin besar = makin lambat. */
+@keyframes fade { from { opacity: 0; } }                                          /* muncul pelan */
+@keyframes up   { from { opacity: 0; transform: translateY(24px); } }            /* naik dari bawah */
+@keyframes drop { from { opacity: 0; transform: translateY(-6px); } }            /* turun dari atas */
+@keyframes pop  { from { opacity: 0; transform: translate(-50%, 8px); } }        /* naik sedikit (toast) */
+@keyframes sl   { from { opacity: 0; transform: translateX(var(--sx)); } }       /* meluncur masuk saat ganti tab */
+
+/* siapa memakai animasi yang mana */
+.sh, #cam, main > section { animation: fade .18s; }                              /* panel, kamera, ganti tab (tanpa geser) */
+.card, .box { animation: up .26s cubic-bezier(.2, .8, .2, 1); }                  /* panel dan kotak PIN naik */
+.menu { animation: drop .15s; }                                                  /* menu pengaturan turun */
+#toast { animation: pop .2s; }                                                   /* pesan singkat */
+
+/* ganti tab: halaman baru meluncur dari kanan (sl-r) atau kiri (sl-l) */
+main > section.sl-r { --sx: 80px; }                                              /* jarak awal meluncur; ubah angka untuk lebih jauh/dekat */
+main > section.sl-l { --sx: -80px; }
+main > section.sl-r, main > section.sl-l { animation: sl .32s cubic-bezier(.2, .8, .2, 1); }
+
+/* tombol mengecil saat ditekan */
+button { transition: transform .12s, filter .12s; }
+button:active { transform: scale(.97); }
+#fab:active { transform: translateX(-50%) scale(.97); }                          /* khusus tombol tambah (agar tetap di tengah) */
+
+/* perubahan warna halus saat ganti tema */
+body, .r, .card, .box, #nav, .st, input, select { transition: background-color .25s, color .25s, border-color .25s; }
+
+.r:active { background: var(--bg); }                                             /* baris berubah warna saat disentuh */
+
+/* efek saat kursor di atas tombol/baris (hanya di perangkat dengan mouse) */
+@media (hover: hover) {
+  .b:hover { filter: brightness(1.1); }
+  .b2:hover, .r:hover { border-color: var(--g); }
 }
 
-.lnk {
-    background: none;
-    color: var(--m);
-    text-decoration: underline;
-    width: 100%;
-    padding: 8px
+/* hormati pengaturan HP "kurangi gerakan": semua animasi dimatikan */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }
 
-.note {
-    background: #FFEFAC;
-    border: 1px solid #C9A300;
-    color: #391E10;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center
+
+/* ===== 15. LAYAR LEBAR (laptop atau tablet, lebar 820px ke atas) =====
+   Navigasi pindah ke sisi kiri, tombol tambah dan bar aksi menyesuaikan. */
+@media (min-width: 820px) {
+  #nav { top: 56px; bottom: auto; width: 210px; flex-direction: column; border-top: 0; border-right: 1px solid var(--l); padding-top: 12px; }   /* width = lebar sidebar */
+  #nav a { text-align: left; padding: 12px 20px; }
+  #nav a.on { box-shadow: inset 3px 0 var(--gold); }                             /* penanda aktif di sisi kiri */
+
+  main { margin-left: 210px; max-width: none; padding: 80px 28px 100px; }       /* margin-left harus sama dengan lebar sidebar */
+  main > section { max-width: 820px; }                                           /* lebar maksimum isi halaman */
+
+  #fab { bottom: 24px; left: calc(50% + 105px); }                                /* tengah area isi (bukan tengah layar) */
+  #toast { bottom: 30px; }
+  #bulk { left: 210px; bottom: 0; }
+  .sh { align-items: center; }                                                   /* panel di tengah layar, bukan di bawah */
+  .card { border-radius: 16px; }                                                 /* semua sudut bulat */
 }
 
-.note span {
-    flex: 1
-}
 
-.st {
-    background: var(--c);
-    border: 1px solid var(--l);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 12px
-}
-
-.st small {
-    color: var(--m);
-    display: block;
-    margin-bottom: 6px
-}
-
-.st .n {
-    display: flex
-}
-
-.st .n div {
-    flex: 1
-}
-
-.st .n div+div {
-    border-left: 1px solid var(--l);
-    padding-left: 14px
-}
-
-.st b {
-    font-size: 1.5rem;
-    line-height: 1.1;
-    display: block
-}
-
-.st span {
-    color: var(--m);
-    font-size: .82rem
-}
-
-@media(min-width:820px) {
-    #nav {
-        top: 56px;
-        bottom: auto;
-        width: 210px;
-        flex-direction: column;
-        border-top: 0;
-        border-right: 1px solid var(--l);
-        padding-top: 12px
-    }
-
-    #nav a {
-        text-align: left;
-        padding: 12px 20px
-    }
-
-    #nav a.on {
-        box-shadow: inset 3px 0 var(--gold)
-    }
-
-    main {
-        margin-left: 210px;
-        max-width: none;
-        padding: 80px 28px 100px
-    }
-
-    main>section {
-        max-width: 820px
-    }
-
-    #fab {
-        bottom: 24px;
-        left: calc(50% + 105px)
-    }
-
-    #toast {
-        bottom: 30px
-    }
-
-    #bulk {
-        left: 210px;
-        bottom: 0
-    }
-
-    .sh {
-        align-items: center
-    }
-
-    .card {
-        border-radius: 16px
-    }
-}
-
+/* ===== 16. CETAK (tombol Cetak / PDF di Laporan) =====
+   Hanya tabel laporan yang tercetak; elemen lain disembunyikan. */
 @media print {
-
-    #top,
-    #nav,
-    #fab,
-    .bar,
-    .noprint,
-    #p-data,
-    #p-kelola {
-        display: none !important
-    }
-
-    main {
-        margin: 0;
-        padding: 0
-    }
+  #top, #nav, #fab, .bar, .noprint, #p-data, #p-kelola { display: none !important; }
+  main { margin: 0; padding: 0; }
 }
