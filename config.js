@@ -4,3 +4,7 @@ const KAT=['Jemaah / masyarakat umum','Instansi / dinas lain','Travel / biro per
 const BAG=['Pimpinan / Kepala Kantor','Tata Usaha / Umum','Pendaftaran dan Berkas Haji','Dokumen dan Visa','Bimbingan dan Manasik','Umrah dan Haji Khusus','Informasi / Pengaduan','Lainnya'];
 const KEP=['Setor berkas / dokumen','Ambil paspor / dokumen','Cek status pendaftaran','Tanya informasi','Bimbingan / manasik','Konsultasi / pengaduan','Rapat / audiensi','Antar surat / paket','Lainnya'];
 const KEC=['Barat','Bendo','Karangrejo','Karas','Kartoharjo','Kawedanan','Lembeyan','Magetan','Maospati','Ngariboyo','Nguntoronadi','Panekan','Parang','Plaosan','Poncol','Sidorejo','Sukomoro','Takeran','Luar Magetan'];
+
+// Judul di bagian atas laporan (Excel dan PDF). Sesuaikan dengan nama resmi kantor.
+const INSTANSI = 'Kementerian Haji dan Umrah';
+const UNIT = 'Magetan';
