@@ -75,7 +75,7 @@ main{margin-left:210px;max-width:none;padding:80px 28px 100px}main>section{max-w
 <header id="top"><img id="logo" src="logo.svg" alt="Logo"><div class="tt"><b>Buku Tamu</b><small>Kemenhaj Magetan</small></div>
 <button class="ib" id="kunci2" aria-label="Kunci aplikasi"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></button>
 <button class="ib" id="gear" aria-label="Pengaturan"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></header>
-<div id="menu" class="menu" hidden><small>Tema tampilan</small><div class="seg"><button data-t="light">Terang</button><button data-t="dark">Gelap</button><button data-t="">Sistem</button></div><button id="upin">Ubah PIN</button><button id="kunci">Kunci aplikasi</button></div>
+<div id="menu" class="menu" hidden><small>Tema tampilan</small><div class="seg"><button data-t="light">Terang</button><button data-t="dark">Gelap</button><button data-t="">Sistem</button></div><button id="upin">Ubah PIN</button><button id="kunci">Kunci aplikasi</button><small id="ver" style="padding:8px 4px 2px"></small></div>
 <nav id="nav"><a data-p="data" class="on">Tamu</a><a data-p="kelola">Kelola</a><a data-p="lapor">Laporan</a></nav>
 <main>
 <section id="p-data"><div id="st" class="st"></div><div id="bn2" class="note" hidden></div><div class="bar"><input id="q" placeholder="Cari nama tamu"><input id="d" type="date"></div><div id="l1"></div></section>
@@ -245,6 +245,7 @@ document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>tema(b.dataset
 $('#gear').onclick=e=>{e.stopPropagation();$('#menu').hidden=!$('#menu').hidden};
 $('#menu').onclick=e=>{if(e.target.closest('#menu>button'))$('#menu').hidden=true};
 document.addEventListener('click',e=>{if(!e.target.closest('#menu'))$('#menu').hidden=true});
+$('#ver').textContent='Versi 8. Animasi '+(matchMedia('(prefers-reduced-motion: reduce)').matches?'dimatikan oleh pengaturan HP':'aktif');
 $('#kunci2').onclick=lockInit;
 $('#kunci').onclick=lockInit;
 const today=now().slice(0,10);$('#d').value=today;$('#lu').value=today;$('#lf').value=today.slice(0,8)+'01';
