@@ -4,11 +4,13 @@
 <title>Buku Tamu Kemenhaj Magetan</title>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
 <meta name="theme-color" content="#391E10">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root{--hd:#391E10;--g:#734128;--gt:#FFFAE6;--gold:#FFCF00;--bg:#FFFAE6;--c:#FFFFFF;--t:#391E10;--m:#734128;--l:#E2CEB1;--r:#9B2C1D}
 @media(prefers-color-scheme:dark){:root:not([data-t]){--bg:#261F00;--c:#391E10;--t:#FFFAE6;--m:#E2CEB1;--l:#734128;--g:#FFCF00;--gt:#261F00;--hd:#000;--r:#FF8A75}}
 :root[data-t=dark]{--bg:#261F00;--c:#391E10;--t:#FFFAE6;--m:#E2CEB1;--l:#734128;--g:#FFCF00;--gt:#261F00;--hd:#000;--r:#FF8A75}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px/1.45 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 [hidden]{display:none!important}
 input,select,button{font:inherit;color:inherit}
 input,select{width:100%;padding:11px 12px;border:1px solid var(--l);border-radius:8px;background:var(--c);margin-top:4px}
@@ -27,6 +29,14 @@ button{cursor:pointer;border:0;border-radius:8px;padding:11px 16px;background:no
 .seg{display:flex;gap:4px;padding:4px 0 8px}.seg button{flex:1;border:1px solid var(--l);padding:8px 2px;font-size:.85rem;color:var(--t)}.seg button.on{background:var(--g);color:var(--gt);border-color:var(--g)}
 body.sel #fab{display:none}
 input:focus,select:focus,button:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+time,.st b{font-variant-numeric:tabular-nums}.tt b{font-size:1.05rem;letter-spacing:.01em}
+button{transition:transform .12s,filter .12s}button:active{transform:scale(.97)}#fab:active{transform:translateX(-50%) scale(.97)}
+body,.r,.card,.box,#nav,.st,input,select{transition:background-color .25s,color .25s,border-color .25s}
+.r:active{background:var(--bg)}
+@media(hover:hover){.b:hover{filter:brightness(1.1)}.b2:hover,.r:hover{border-color:var(--g)}}
+@keyframes fade{from{opacity:0}}@keyframes up{from{opacity:0;transform:translateY(24px)}}@keyframes drop{from{opacity:0;transform:translateY(-6px)}}@keyframes pop{from{opacity:0;transform:translate(-50%,8px)}}
+.sh,#cam,main>section{animation:fade .18s}.card,.box{animation:up .26s cubic-bezier(.2,.8,.2,1)}.menu{animation:drop .15s}#toast{animation:pop .2s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 main{padding:calc(70px + env(safe-area-inset-top,0px)) 14px calc(150px + env(safe-area-inset-bottom,0));max-width:760px;margin:0 auto}
 .bar{display:flex;gap:8px;margin-bottom:10px}.bar input{margin:0}.bar input[type=date]{width:auto}
 .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--c);border:1px solid var(--l);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer}
