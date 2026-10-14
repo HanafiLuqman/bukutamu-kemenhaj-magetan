@@ -135,14 +135,18 @@ input:focus, select:focus, button:focus-visible { outline: 2px solid var(--g); o
   z-index: 16;
   box-shadow: 0 6px 20px #0004;                                /* bayangan */
 }
-.menu > button { display: block; width: 100%; text-align: left; padding: 12px; color: var(--t); }   /* "Ubah PIN", "Kunci aplikasi" */
+/* baris pilihan di menu dibuat seperti tombol: ada panah di kanan, garis tipis antar baris, dan berubah warna saat disentuh */
+.menu > button { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; padding: 12px; color: var(--t); }
+.menu > button::after { content: ""; width: 8px; height: 8px; border-top: 2px solid var(--m); border-right: 2px solid var(--m); transform: rotate(45deg); flex: none; }   /* panah di kanan baris */
+.menu > button + button { border-top: 1px solid var(--l); border-radius: 0; }   /* garis tipis antar baris dalam satu kelompok (tidak sampai tepi menu) */
+.menu > button:active { background: var(--bg); }                                /* warna saat baris ditekan */
 .menu small { color: var(--m); padding: 4px 4px; display: block; }                                  /* tulisan kecil "Tema tampilan" dan versi */
 
 /* tiga tombol pilihan tema (Terang / Gelap / Sistem) */
 .seg { display: flex; gap: 4px; padding: 4px 0 8px; }
 .seg button { flex: 1; border: 1px solid var(--l); padding: 8px 2px; font-size: .85rem; color: var(--t); }
 .menu { max-height: calc(100vh - 80px); overflow-y: auto; }                  /* menu bisa digulir bila layar pendek */
-.menu hr { border: 0; border-top: 1px solid var(--l); margin: 6px 0; }       /* garis pemisah antar kelompok menu */
+.menu hr { border: 0; border-top: 1px solid var(--l); margin: 6px -8px; }   /* garis pemisah antar kelompok: penuh sampai tepi menu (-8px sama dengan padding menu) */
 .seg button.on { background: var(--g); color: var(--gt); border-color: var(--g); }   /* tema yang sedang dipilih */
 
 
@@ -332,6 +336,7 @@ body, .r, .card, .box, #nav, .st, input, select { transition: background-color .
 @media (hover: hover) {
   .b:hover { filter: brightness(1.1); }
   .b2:hover, .r:hover { border-color: var(--g); }
+  .menu > button:hover { background: var(--bg); }
 }
 
 /* hormati pengaturan HP "kurangi gerakan": semua animasi dimatikan */
