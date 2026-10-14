@@ -36,6 +36,9 @@ body,.r,.card,.box,#nav,.st,input,select{transition:background-color .25s,color 
 @media(hover:hover){.b:hover{filter:brightness(1.1)}.b2:hover,.r:hover{border-color:var(--g)}}
 @keyframes fade{from{opacity:0}}@keyframes up{from{opacity:0;transform:translateY(24px)}}@keyframes drop{from{opacity:0;transform:translateY(-6px)}}@keyframes pop{from{opacity:0;transform:translate(-50%,8px)}}
 .sh,#cam,main>section{animation:fade .18s}.card,.box{animation:up .26s cubic-bezier(.2,.8,.2,1)}.menu{animation:drop .15s}#toast{animation:pop .2s}
+@keyframes sl{from{opacity:0;transform:translateX(var(--sx))}}
+main>section.sl-r{--sx:80px}main>section.sl-l{--sx:-80px}main>section.sl-r,main>section.sl-l{animation:sl .32s cubic-bezier(.2,.8,.2,1)}
+html,body{overscroll-behavior-x:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 main{padding:calc(70px + env(safe-area-inset-top,0px)) 14px calc(150px + env(safe-area-inset-bottom,0));max-width:760px;margin:0 auto}
 .bar{display:flex;gap:8px;margin-bottom:10px}.bar input{margin:0}.bar input[type=date]{width:auto}
@@ -81,7 +84,7 @@ main{margin-left:210px;max-width:none;padding:80px 28px 100px}main>section{max-w
 <nav id="nav"><a data-p="data" class="on">Tamu</a><a data-p="kelola">Kelola</a><a data-p="lapor">Laporan</a></nav>
 <main>
 <section id="p-data"><div id="st" class="st"></div><div id="bn2" class="note" hidden></div><div class="bar"><input id="q" placeholder="Cari nama tamu"><input id="d" type="date"></div><div id="l1"></div></section>
-<section id="p-kelola" hidden><div class="bar"><input id="q2" placeholder="Cari nama tamu"><input id="d2" type="date" title="Sampai tanggal"></div><label><input id="td" type="checkbox" style="width:auto;margin:0 6px 0 0">Tampilkan hanya data terhapus (untuk dipulihkan atau dimusnahkan)</label><label id="ca" hidden style="color:var(--t);font-weight:600"><input id="cka" type="checkbox" class="ck" style="display:inline-block;vertical-align:middle;margin-right:8px"><span id="cat"></span></label><div id="l2"></div></section>
+<section id="p-kelola" hidden><div class="bar"><input id="q2" placeholder="Cari nama tamu"></div><div class="dr"><label>Dari<input id="d1" type="date"></label><label>Sampai<input id="d2" type="date"></label><button class="lnk" id="dc" style="grid-column:1/-1;padding:0 0 4px">Hapus filter tanggal</button></div><label><input id="td" type="checkbox" style="width:auto;margin:0 6px 0 0">Tampilkan hanya data terhapus (untuk dipulihkan atau dimusnahkan)</label><label id="ca" hidden style="color:var(--t);font-weight:600"><input id="cka" type="checkbox" class="ck" style="display:inline-block;vertical-align:middle;margin-right:8px"><span id="cat"></span></label><div id="l2"></div></section>
 <section id="p-lapor" hidden><div class="dr noprint"><label>Dari<input id="lf" type="date"></label><label>Sampai<input id="lu" type="date"></label></div>
 <b id="cn"></b><div class="tw"><table id="rt"></table></div>
 <div class="row noprint"><button id="xr" class="b">Export Excel</button><button id="pr" class="b2">Cetak / PDF</button></div>
@@ -122,7 +125,7 @@ function render(){const hr=now().slice(0,10),ac=data.filter(t=>!t.dihapus_pada);
  const q=$('#q').value.toLowerCase(),d=$('#d').value;
  const a=data.filter(t=>!t.dihapus_pada&&(!d||t.waktu_masuk.startsWith(d))&&t.nama.toLowerCase().includes(q));
  $('#l1').innerHTML=a.map(t=>row(t)).join('')||`<p class="e">Belum ada tamu${d?' pada tanggal ini':''}. Tekan + untuk mencatat tamu.</p>`;
- const q2=$('#q2').value.toLowerCase(),sd=$('#td').checked,d2=$('#d2').value,b=data.filter(t=>!!t.dihapus_pada===sd&&t.nama.toLowerCase().includes(q2)&&(!d2||t.waktu_masuk.slice(0,10)<=d2));kl=b;[...sel].forEach(i=>{if(!b.some(t=>t.id===i))sel.delete(i)});
+ const q2=$('#q2').value.toLowerCase(),sd=$('#td').checked,d1=$('#d1').value,d2=$('#d2').value,b=data.filter(t=>!!t.dihapus_pada===sd&&t.nama.toLowerCase().includes(q2)&&(!d1||t.waktu_masuk.slice(0,10)>=d1)&&(!d2||t.waktu_masuk.slice(0,10)<=d2));kl=b;[...sel].forEach(i=>{if(!b.some(t=>t.id===i))sel.delete(i)});
  $('#l2').innerHTML=(sd?b:b.slice(0,100)).map(t=>row(t,1)).join('')||'<p class="e">Data tidak ditemukan.</p>';
  $('#ca').hidden=!sd||!b.length;$('#cat').textContent=`Centang semua (${b.length} data)`;$('#cka').checked=sd&&b.length>0&&sel.size===b.length;$('#bulk').hidden=!sd||!sel.size;$('#bn').textContent=sel.size+' dipilih';document.body.classList.toggle('sel',!$('#bulk').hidden);
  renderLapor()}
@@ -198,8 +201,9 @@ $('#pr').onclick=()=>print();
 $('#lf').onchange=$('#lu').onchange=renderLapor;
 
 // ===== Navigasi, kunci PIN, awal =====
-document.querySelectorAll('#nav a[data-p]').forEach(a=>a.onclick=()=>{document.querySelectorAll('#nav a').forEach(x=>x.classList.toggle('on',x===a));['data','kelola','lapor'].forEach(p=>$('#p-'+p).hidden=p!==a.dataset.p);$('#fab').hidden=a.dataset.p==='lapor';$('#bulk').style.display=a.dataset.p==='kelola'?'':'none'});
-['q','d','q2','d2','td'].forEach(i=>$('#'+i).oninput=render);
+const TABS=['data','kelola','lapor'];
+document.querySelectorAll('#nav a[data-p]').forEach(a=>a.onclick=()=>{const o=TABS.findIndex(p=>!$('#p-'+p).hidden),w=TABS.indexOf(a.dataset.p);if(o===w)return;const el=$('#p-'+a.dataset.p);el.classList.remove('sl-l','sl-r');el.classList.add(w>o?'sl-r':'sl-l');document.querySelectorAll('#nav a').forEach(x=>x.classList.toggle('on',x===a));TABS.forEach(p=>$('#p-'+p).hidden=p!==a.dataset.p);$('#fab').hidden=a.dataset.p==='lapor';$('#bulk').style.display=a.dataset.p==='kelola'?'':'none'});
+['q','d','q2','td'].forEach(i=>$('#'+i).oninput=render);
 const hash=async p=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('bt1'+p)))].map(b=>b.toString(16).padStart(2,'0')).join('');
 async function lockInit(){const p=await get('set','pin');$('#lt').textContent=p?'Masukkan PIN':'Buat PIN baru';$('#ls').textContent=p?'':'Minimal 4 angka. Catat PIN di tempat aman.';$('#pin').value='';$('#lock').hidden=false;
  $('#pb').onclick=async()=>{const v=$('#pin').value;if(v.length<4)return toast('PIN minimal 4 angka.');const h=await hash(v);if(!p)await put('set',{k:'pin',h});else if(p.h!==h)return toast('PIN salah.');$('#lock').hidden=true;load();if(!p)newRec()}}
@@ -247,11 +251,19 @@ document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>tema(b.dataset
 $('#gear').onclick=e=>{e.stopPropagation();$('#menu').hidden=!$('#menu').hidden};
 $('#menu').onclick=e=>{if(e.target.closest('#menu>button'))$('#menu').hidden=true};
 document.addEventListener('click',e=>{if(!e.target.closest('#menu'))$('#menu').hidden=true});
-$('#ver').textContent='Versi 9. Animasi '+(matchMedia('(prefers-reduced-motion: reduce)').matches?'dimatikan oleh pengaturan HP':'aktif');
-let sx=0,sy=0,sg=false;
-document.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;sg=e.touches.length===1&&!e.target.closest('.tw,input,select,textarea,#menu,#top,#nav')&&$('#sh').hidden&&$('#cam').hidden&&$('#lock').hidden},{passive:true});
-document.addEventListener('touchend',e=>{if(!sg)return;sg=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6)return;
+$('#ver').textContent='Versi 10. Animasi '+(matchMedia('(prefers-reduced-motion: reduce)').matches?'dimatikan oleh pengaturan HP':'aktif');
+let sx=0,sy=0,sg=false,dg=false;
+const cur=()=>document.querySelector('main>section:not([hidden])'),rs=c=>{if(c){c.style.transform='';c.style.opacity=''}};
+document.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;dg=false;sg=e.touches.length===1&&!e.target.closest('.tw,input,select,textarea,#menu,#top,#nav')&&$('#sh').hidden&&$('#cam').hidden&&$('#lock').hidden},{passive:true});
+document.addEventListener('touchmove',e=>{if(!sg)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(!dg&&(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.6))return;dg=true;const c=cur();if(c){c.style.transition='none';c.style.transform=`translateX(${dx*.5}px)`;c.style.opacity=1-Math.min(1,Math.abs(dx)/300)*.6}},{passive:true});
+document.addEventListener('touchend',e=>{if(!sg)return;sg=false;const dx=e.changedTouches[0].clientX-sx,c=cur();
+ if(c&&dg){c.style.transition='transform .2s,opacity .2s';rs(c);setTimeout(()=>c.style.transition='',250)}
+ if(!dg||Math.abs(dx)<70)return;
  const n=[...document.querySelectorAll('#nav a')],j=n.findIndex(a=>a.classList.contains('on'))+(dx<0?1:-1);if(n[j]){n[j].click();scrollTo(0,0)}},{passive:true});
+document.addEventListener('touchcancel',()=>{sg=false;const c=cur();if(c){c.style.transition='';rs(c)}},{passive:true});
+$('#d1').addEventListener('input',()=>{if(!$('#d2').value)$('#d2').value=$('#d1').value;render()});
+$('#d2').addEventListener('input',()=>{if(!$('#d1').value)$('#d1').value=$('#d2').value;render()});
+$('#dc').onclick=()=>{$('#d1').value=$('#d2').value='';render()};
 $('#kunci2').onclick=lockInit;
 $('#kunci').onclick=lockInit;
 const today=now().slice(0,10);$('#d').value=today;$('#lu').value=today;$('#lf').value=today.slice(0,8)+'01';
