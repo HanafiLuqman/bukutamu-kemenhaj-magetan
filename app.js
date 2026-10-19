@@ -41,7 +41,7 @@ document.addEventListener('click', async e => {
 async function mark(t, v) { const n = now(); await put('log', { id: uuid(), waktu: n, aksi: v ? 'hapus' : 'pulih', tamu_id: t.id, sebelum: JSON.stringify(t) }); t.dihapus_pada = v; t.diubah_pada = n; await put('tamu', t); close(); toast(v ? 'Data dihapus.' : 'Data dipulihkan.'); load() }
 
 // ===== Form tambah / edit =====
-const opt = (a, v) => a.map(x => `<option${x === v ? ' selected' : ''}>${esc(x)}</option>`).join('');
+const opt = (a, v) => (v&&!a.includes(v)?[...a, v]:a).map(x =>`<option${x === v ?' selected':''}>${esc(x)}</option>`).join('');
 function form(id) {
     const t = id ? data.find(x => x.id === id) : {}, e = !!id; pendingFoto = null;
     sheet(`<h3>${e ? 'Edit data tamu' : 'Tambah tamu'}</h3>
