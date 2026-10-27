@@ -68,13 +68,14 @@
 /* ===== 2. DASAR ===== */
 * { box-sizing: border-box; }                 /* padding dan bingkai dihitung di dalam lebar elemen */
 html, body { overscroll-behavior-x: none; }   /* cegah geser mendatar bawaan browser */
+html { font-size: 112.5%; }                   /* 100% = 16px, 112.5% = 18px, 125% = 20px, untuk mengubah ukuran text, satu aturan tambahan*/
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--t);
   /* ukuran huruf dasar / tinggi baris / jenis huruf (urutan = cadangan jika huruf pertama gagal dimuat) */
-  font: 16px/1.45 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 1rem/1.45 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; /* menggunakan satuan rem agar font dapat diubah secara keseluruhan tanpa merubah satu persatu ukuran */
 }
 
 [hidden] { display: none !important; }        /* elemen ber-atribut hidden harus selalu tersembunyi. Jangan dihapus. */
