@@ -351,7 +351,8 @@ body, .r, .card, .box, #nav, .st, input, select { transition: background-color .
   #nav { top: 56px; bottom: 0; width: 210px; flex-direction: column; border-top: 0; border-right: 1px solid var(--l); padding-top: 12px; }   /* width = lebar sidebar */
   #nav a { text-align: left; flex: none; padding: 12px 20px; }
   #nav a.on { box-shadow: inset 3px 0 var(--gold); }                             /* penanda aktif di sisi kiri */
-  #nav a + a { border-top: 1px solid var(--l); }                                 /* garis pembatas antar tombol navigasi */
+  #nav a { position: relative; }                                                 /* garis pembatas antar tombol navigasi */
+  #nav a + a::before { content: ""; position: absolute; top: 0; left: 16px; right: 16px; border-top: 1px solid var(--l); }   /* garis pembatas antar tombol navigasi */
   #nav a { transition: background-color .2s, padding-left .2s; }                 /* memberi animasi perubahan warna dalam 0.2 detik saat krusor diarahkan ke tombol */
   #nav a:hover { background: var(--bg); padding-left: 26px; }                    /* memberi animasi geser tulisan dari 20px menjadi 26px */
 
