@@ -348,12 +348,12 @@ body, .r, .card, .box, #nav, .st, input, select { transition: background-color .
 /* ===== 15. LAYAR LEBAR (laptop atau tablet, lebar 820px ke atas) =====
    Navigasi pindah ke sisi kiri, tombol tambah dan bar aksi menyesuaikan. */
 @media (min-width: 820px) {
-  #nav { top: 56px; bottom: auto; width: 210px; flex-direction: column; border-top: 0; border-right: 1px solid var(--l); padding-top: 12px; }   /* width = lebar sidebar */
-  #nav a { text-align: left; padding: 12px 20px; }
+  #nav { top: 56px; bottom: 0; width: 210px; flex-direction: column; border-top: 0; border-right: 1px solid var(--l); padding-top: 12px; }   /* width = lebar sidebar */
+  #nav a { text-align: left; flex: none; padding: 12px 20px; }
   #nav a.on { box-shadow: inset 3px 0 var(--gold); }                             /* penanda aktif di sisi kiri */
 
   main { margin-left: 210px; max-width: none; padding: 80px 28px 100px; }       /* margin-left harus sama dengan lebar sidebar */
-  main > section { max-width: 820px; }                                           /* lebar maksimum isi halaman */
+  main > section { margin: 0 auto; max-width: 820px; }                                           /* lebar maksimum isi halaman */
 
   #fab { bottom: 24px; left: calc(50% + 105px); }                                /* tengah area isi (bukan tengah layar) */
   #toast { bottom: 30px; }
