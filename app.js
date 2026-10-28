@@ -89,7 +89,7 @@ const rng = () => data.filter(t => !t.dihapus_pada && t.waktu_masuk.slice(0, 10)
 function renderLapor() {
     const a = rng(); $('#cn').textContent = a.length + ' kunjungan';
     $('#kop').innerHTML = `<h2>LAPORAN BUKU TAMU</h2><div>${INSTANSI} ${UNIT}</div><div>Periode: ${tgl($('#lf').value)} sampai ${tgl($('#lu').value)}</div><div>Total kunjungan: ${a.length}</div>`;
-    $('#rt').innerHTML = `<thead><tr><th>No</th><th>Waktu masuk</th><th>Nama</th><th>Kategori</th><th>Kecamatan</th><th>Bagian</th><th>Keperluan</th><th>Jml</th></tr></thead><tbody>${a.map((t, i) => `<tr><td>${i + 1}</td><td>${fmt(t.waktu_masuk)}</td><td>${esc(t.nama)}</td><td>${esc(t.kategori)}</td><td>${esc(t.kecamatan)}</td><td>${esc(t.bagian)}</td><td>${esc(t.keperluan)}</td><td>${t.jumlah}</td></tr>`).join('')}</tbody>`
+    $('#rt').innerHTML = `<thead><tr><th>No</th><th>Waktu masuk</th><th>Nama Tamu</th><th>Kategori Tamu</th><th>Kecamatan Asal</th><th>Bagian Dituju</th><th>Keperluan</th><th>Jumlah</th></tr></thead><tbody>${a.map((t, i) => `<tr><td>${i + 1}</td><td>${fmt(t.waktu_masuk)}</td><td>${esc(t.nama)}</td><td>${esc(t.kategori)}</td><td>${esc(t.kecamatan)}</td><td>${esc(t.bagian)}</td><td>${esc(t.keperluan)}</td><td>${t.jumlah}</td></tr>`).join('')}</tbody>`
 }
 const xl = () => typeof XLSX !== 'undefined' || (toast('Library Excel belum termuat. Buka aplikasi sekali dengan internet.'), false);
 const out = (sh, name) => { const wb = XLSX.utils.book_new(); sh.forEach(([n, r, h]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(r, h ? { header: h } : undefined), n)); XLSX.writeFile(wb, name) };
