@@ -84,6 +84,7 @@ input, select, button { font: inherit; color: inherit; }   /* ikuti huruf dan wa
 
 /* kolom isian dan dropdown */
 input, select {
+  font-weight: 400;                 /* untuk tetap mempertahankan weight isian form popup supaya tidak ikut tebal*/
   width: 100%;
   padding: 11px 12px;               /* tinggi kolom isian */
   border: 1px solid var(--l);
@@ -257,6 +258,7 @@ body.sel #fab { display: none; }                                             /* 
   border-radius: 16px 16px 0 0;                                  /* hanya sudut atas yang bulat */
   padding: 18px;
 }
+.card label { font-weight: 700; color: var(--t); }               /* untuk membuat label di dalam menu popup tambah tamu, ubah pin, hapus permanen menjadi tebal*/
 .card h3 { margin: 0 0 12px; }                                   /* judul panel */
 .row { display: flex; gap: 8px; }                                /* baris tombol berdampingan (Batal | Simpan) */
 .row button { flex: 1; }
